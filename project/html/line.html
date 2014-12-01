@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://iv.scfu.me/static/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="http://iv.scfu.me/static/css/nv.d3.css">
+
+
+<title>TAXI Demo</title>
+
+
+
+</style>
+
+</head>
+
+<body>
+      <div class="row">
+
+        <div id="chart" class="with-3d-shadow with-transitions col-md-8"  style="height:880px">
+          <svg></svg>
+        </div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script src="http://iv.scfu.me/static/js/d3.v3.js"></script>
+<script src="http://iv.scfu.me/static/js/nv.d3.js"></script>
+
+<script>
+nv.addGraph(function() {
+  var chart = nv.models.lineWithFocusChart();
+
+  chart.xAxis
+      .tickFormat(d3.format(',f'));
+
+  chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+  chart.y2Axis
+      .tickFormat(d3.format(',.2f'));
+
+  d3.select('#chart svg')
+      .datum(testData())
+      .transition().duration(500)
+      .call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+
+
+
+/* Inspired by Lee Byron's test data generator. */
+function stream_layers(n, m, o) {
+  if (arguments.length < 3) o = 0;
+  function bump(a) {
+    var x = 1 / (.1 + Math.random()),
+        y = 2 * Math.random() - .5,
+        z = 10 / (.1 + Math.random());
+    for (var i = 0; i < m; i++) {
+      var w = (i / m - y) * z;
+      a[i] += x * Math.exp(-w * w);
+    }
+  }
+  return d3.range(n).map(function() {
+      var a = [], i;
+      for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+      for (i = 0; i < 5; i++) bump(a);
+      return a.map(stream_index);
+    });
+}
+
+/* Another layer generator using gamma distributions. */
+function stream_waves(n, m) {
+  return d3.range(n).map(function(i) {
+    return d3.range(m).map(function(j) {
+        var x = 20 * j / m - i / 3;
+        return 2 * x * Math.exp(-.5 * x);
+      }).map(stream_index);
+    });
+}
+
+function stream_index(d, i) {
+  return {x: i, y: Math.max(0, d)};
+}
+
+/**************************************
+ * Simple test data generator
+ */
+
+function testData() {
+  return stream_layers(2,30,.1).map(function(data, i) {
+    return { 
+      key: 'Num_of_trips' + i,
+      values: data
+    };
+  });
+}
+</script>
+
+</body>
+
+</html>
