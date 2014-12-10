@@ -1,5 +1,6 @@
 #usr/bin/python
 from pymongo import MongoClient
+import datetime
 
 def connect_db():
     client = MongoClient()
@@ -11,7 +12,7 @@ def insert():
     collection = db['weather']
     error = []
     hour_range = [12] + range(1, 13) + range(1, 12)
-    for i in range(1, 2):
+    for i in range(1, 366):
         file_name = "%s.csv"%i
         handler = open(file_name)
         hour_no = 0
@@ -30,7 +31,10 @@ def insert_record(line):
     record = {}
     header = 'TimeEST,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC'.split(',')
     for i in range(len(line)):
-        record[header[i]] = line[i]
+        if i == len(line) -1:
+            record[header[i]] = datetime.datetime.strptime(line[i][:-7], '%Y-%m-%d %H:%M:%S')
+        else:
+            record[header[i]] = line[i]
     return record
     
 def is_valid():
