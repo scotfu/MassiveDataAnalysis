@@ -30,7 +30,7 @@
 <script src="http://iv.scfu.me/static/js/nv.d3.js"></script>
 
 <script>
-
+var parseDate = d3.time.format("%Y-%m-%d %H:").parse;
 function format(trip, temp){
 var data = [
 {
@@ -47,7 +47,8 @@ var data = [
 
 for (i = 0; i < trip.length; i++) {
                  data[0].values.push({
-                 "x": trip[i]["time"],
+//                 "x": trip[i]["time"],
+                 "x": parseDate(trip[i]["time"]),
                  "y": parseFloat(trip[i]["count"]),
                  })};         
                  
@@ -55,42 +56,42 @@ for (i = 0; i < trip.length; i++) {
 
 for (i = 0; i < temp.length; i++) {
                  data[1].values.push({
-                 "x": temp[i]["time"],
+//                 "x": temp[i]["time"],
+                 "x": parseDate(temp[i]["time"]),
                  "y": parseFloat(temp[i]["temperature"]),
                  })};         
 
 return data;
 }
 function load(){
-$.getJSON("/api/temperature/?start=2013-01-05&end=2013-01-12", function(data) {
-$.getJSON("/api/trip/?start=2013-01-05&end=2013-01-12", function(data2) {
+$.getJSON("/api/temperature/?start=2013-01-01&end=2013-01-02", function(data) {
+$.getJSON("/api/trip/?start=2013-01-01&end=2013-01-02", function(data2) {
  drawGraph(format(data2, data));
 })
 })
 }
 window.onload= load;
 
+
+
 function drawGraph(testdata){
 console.log(testdata);
 nv.addGraph(function() {
     var chart = nv.models.linePlusBarWithFocusChart()
         .margin({top: 30, right: 60, bottom: 50, left: 70})
-        .x(function(d,i) { return i })
+//        .x(function(d,i) { return i })
         .color(d3.scale.category10().range());
 
-    chart.xAxis.tickFormat(function(d) {
 
-      var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
-      if (dx > 0) {
-          return d3.time.format('%x')(new Date(dx))
-      }
-      return null;
+    chart.xAxis.tickFormat(function(d) {
+          return d3.time.format("%m-%d %H")(new Date(d))
     });
 
     chart.x2Axis.tickFormat(function(d) {
-      var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
-      return d3.time.format('%x')(new Date(dx))
+          return d3.time.format("%m-%d %H")(new Date(d))
     });
+
+
     
     chart.y1Axis
         .tickFormat(d3.format('2f'));
