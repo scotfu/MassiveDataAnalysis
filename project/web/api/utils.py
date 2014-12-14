@@ -57,6 +57,19 @@ def get_trip(start,end):
         result.append({'time':v_time, 'count':count})
     return result
 
+def get_area(start,end):
+    db = get_db()
+    collection = db['polygon']
+    start = datetime.datetime(*time.strptime(start, '%Y-%m-%d')[:6])
+    end = datetime.datetime(*time.strptime(end, '%Y-%m-%d')[:6])
+    count = list(collection.find({'time':{'$gte':start,'$lte':end}},{'_id':0}))
+    result = []
+    for t in count:
+        v_time = t.get('time').strftime('%Y-%m-%d %H:')
+        count = int(t.get('count'))
+        result.append({'time':v_time, 'count':count})
+    return result
+    
 
 
 def get_tip(start,end):
