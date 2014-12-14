@@ -27,10 +27,17 @@ def tip():
         record = {'time':datetime.datetime.strptime(line[0], '%Y-%m-%d-%H'), 'count' : line[1]}
         collection.insert(record)
 
+def polygon():
+    db = connect_db()
+    collection = db['polygon']
+    file = open('poly_per_hour.data')
+    for line in file:
+        line = line.strip().split('\t')
+        record = {'time':datetime.datetime.strptime(line[0], '%Y-%m-%d-%H'), 'count' : line[1]}
+        collection.insert(record)
 
 
 
 
 if __name__ == '__main__':
-    trip()
-    tip()
+    polygon()

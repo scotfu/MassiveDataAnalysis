@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="http://iv.scfu.me/static/css/bootstrap.min.css">
 
 <link rel="stylesheet" href="http://iv.scfu.me/static/css/nv.d3.css">
+<link rel="stylesheet" href="/static/css/datepicker.css">
 
 
 <title>TAXI Demo</title>
@@ -17,20 +18,83 @@
 </head>
 
 <body>
+<div class="container-fluid" style="margin-top:10px;">
+<div class="row">
+
+
+  <div class="form-horizontal">
+
+
+    <div class="form-group">
+      <label class="col-sm-1 control-label">Data Set</label>
+      <div class="col-sm-2">
+<select class="form-control" id="dataset">
+  <option value="trip">Original</option>
+  <option value="tip">Tip above 30%</option>
+  <option value="area">6th AV, 30-34th ST</option>
+</select>
+      </div>
+
+      <label class="col-sm-1 control-label">Start Date</label>
+      <div class="col-sm-2">
+        <input class="datepicker form-control col-md-2" type="text"  id="start">
+      </div>
+
+      <label class="col-sm-1 control-label">End Date</label>
+      <div class="col-sm-2">
+        <input class="datepicker form-control col-md-2" type="text"  id="end">
+      </div>
+<div class="col-md-2 col-md-offset-1">
+<button id="magic_button" class="btn btn-default">Query</button>
+</div>
+
+    </div>
+
+
+
+
+</div>
+</div>
+</div>
+
+
+
+
+
+
       <div class="row">
 
-        <div id="chart1" class="with-3d-shadow with-transitions col-md-8"  style="height:880px">
+        <div id="chart1" class="with-3d-shadow with-transitions col-md-12"  style="height:880px">
           <svg></svg>
         </div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
+<script src="/static/js/bootstrap-datepicker.js"></script>
 <script src="http://iv.scfu.me/static/js/d3.v3.js"></script>
 <script src="http://iv.scfu.me/static/js/nv.d3.js"></script>
 
 <script>
+$('.datepicker').datepicker({
+
+format: "yyyy-mm-dd",
+startDate: "2013-01-01",
+endDate: "2013-2-31",
+
+});
 var parseDate = d3.time.format("%Y-%m-%d %H:").parse;
+
+
+
+$("#magic_button").click(function(){
+      var dataset = $("#dataset").val();
+      var start = $("#start").val();
+      var end = $("#end").val();
+load(dataset,start,end);
+    });
+
+
 function format(trip, temp){
 var data = [
 {
@@ -63,14 +127,14 @@ for (i = 0; i < temp.length; i++) {
 
 return data;
 }
-function load(){
-$.getJSON("/api/temperature/?start=2013-01-01&end=2013-01-02", function(data) {
-$.getJSON("/api/trip/?start=2013-01-01&end=2013-01-02", function(data2) {
+function load(dataset,start,end){
+$.getJSON("/api/temperature/?start="+start+"&end="+end, function(data) {
+$.getJSON("/api/"+ dataset+"/?start="+start+"&end="+end, function(data2) {
  drawGraph(format(data2, data));
 })
 })
 }
-window.onload= load;
+window.onload= load("trip","2013-01-01","2013-01-07");
 
 
 
@@ -108,10 +172,11 @@ nv.addGraph(function() {
     chart.bars.forceY([0]);
     chart.bars2.forceY([0]);
     //chart.lines.forceY([0]);
+    d3.selectAll("#chart1 svg> *").remove();//clear the svg
     d3.select('#chart1 svg')
         .datum(testdata)
         .call(chart);
-//    nv.utils.windowResize(chart.update);
+    nv.utils.windowResize(chart.update);
     return chart;
 });
 }
