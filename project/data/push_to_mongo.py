@@ -7,6 +7,7 @@ def connect_db():
     db = client['project']
     return db
 
+    
 
 def trip():
     db = connect_db()
@@ -36,8 +37,18 @@ def polygon():
         record = {'time':datetime.datetime.strptime(line[0], '%Y-%m-%d-%H'), 'count' : line[1]}
         collection.insert(record)
 
+def bar():
+    db = connect_db()
+    collection = db['bar']
+    file = open('bar_per_hour.data')
+    for line in file:
+        line = line.strip().split('\t')
+        record = {'time':datetime.datetime.strptime(line[0], '%Y-%m-%d-%H'), 'count' : line[1]}
+        collection.insert(record)
+
+        
 
 
 
 if __name__ == '__main__':
-    polygon()
+    bar()
