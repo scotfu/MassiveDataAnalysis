@@ -9,7 +9,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort,render_te
 
 
 from . import app
-from .utils import get_trip, get_tip, get_temperature,get_area
+from .utils import get_trip, get_tip, get_temperature,get_area, get_bar
 
 class ListView(View):
 
@@ -68,6 +68,14 @@ class Area_Hour(MethodView):
         result = get_area(start_date, end_date)
         return json.dumps(result)        
 
+class Bar_Hour(MethodView):
+
+    def get(self):
+        start_date = request.args.get('start','2013-01-01')
+        end_date = request.args.get('end','2013-01-31')        
+        result = get_bar(start_date, end_date)
+        return json.dumps(result)        
+        
 
 class Trip_Count(MethodView):
 
